@@ -474,8 +474,6 @@ static int acenic_probe_one(struct pci_dev *pdev,
 	dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX;
 
 	dev->watchdog_timeo = 5*HZ;
-	dev->min_mtu = 0;
-	dev->max_mtu = ACE_JUMBO_MTU;
 
 	dev->netdev_ops = &ace_netdev_ops;
 	dev->ethtool_ops = &ace_ethtool_ops;
