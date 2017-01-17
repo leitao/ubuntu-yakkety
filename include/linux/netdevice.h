@@ -1711,6 +1711,8 @@ struct net_device {
 	unsigned char		dma;
 
 	unsigned int		mtu;
+	unsigned int		min_mtu;
+	unsigned int		max_mtu;
 	unsigned short		type;
 	unsigned short		hard_header_len;
 
