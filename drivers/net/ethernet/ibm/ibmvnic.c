@@ -425,7 +425,7 @@ static int ibmvnic_open(struct net_device *netdev)
 
 		if (alloc_long_term_buff(adapter, &tx_pool->long_term_buff,
 					 adapter->max_tx_entries_per_subcrq *
-					 adapter->req_mtu))
+					 netdev->mtu))
 			goto tx_ltb_alloc_failed;
 
 		tx_pool->free_map =
@@ -734,9 +734,9 @@ static int ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
 	}
 
 	index = tx_pool->free_map[tx_pool->consumer_index];
-	offset = index * adapter->req_mtu;
+	offset = index * netdev->mtu;
 	dst = tx_pool->long_term_buff.buff + offset;
-	memset(dst, 0, adapter->req_mtu);
+	memset(dst, 0, netdev->mtu);
 	skb_copy_from_linear_data(skb, dst, skb->len);
 	data_dma_addr = tx_pool->long_term_buff.addr + offset;
 
@@ -1495,7 +1495,7 @@ static void init_sub_crqs(struct ibmvnic_adapter *adapter, int retry)
 		adapter->req_rx_queues = adapter->opt_rx_comp_queues;
 		adapter->req_rx_add_queues = adapter->max_rx_add_queues;
 
-		adapter->req_mtu = adapter->max_mtu;
+		adapter->req_mtu = adapter->netdev->mtu + ETH_HLEN;
 	}
 
 	total_queues = adapter->req_tx_queues + adapter->req_rx_queues;
@@ -2624,12 +2624,12 @@ static void handle_query_cap_rsp(union ibmvnic_crq *crq,
 			   adapter->promisc_supported);
 		break;
 	case MIN_MTU:
-		adapter->min_mtu = be64_to_cpu(crq->query_capability.number);
+		adapter->min_mtu = be64_to_cpu(crq->query_capability.number) - ETH_HLEN;
 		netdev->min_mtu = adapter->min_mtu;
 		netdev_dbg(netdev, "min_mtu = %lld\n", adapter->min_mtu);
 		break;
 	case MAX_MTU:
-		adapter->max_mtu = be64_to_cpu(crq->query_capability.number);
+		adapter->max_mtu = be64_to_cpu(crq->query_capability.number - ETH_HLEN);
 		netdev->max_mtu = adapter->max_mtu;
 		netdev_dbg(netdev, "max_mtu = %lld\n", adapter->max_mtu);
 		break;
