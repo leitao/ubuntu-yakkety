@@ -1048,4 +1048,5 @@ struct ibmvnic_adapter {
 
 	struct work_struct vnic_crq_init;
 	struct work_struct ibmvnic_xport;
+	struct tasklet_struct tasklet;
 };
