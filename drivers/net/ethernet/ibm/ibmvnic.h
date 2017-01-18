@@ -1047,4 +1047,5 @@ struct ibmvnic_adapter {
 	u8 map_id;
 
 	struct work_struct vnic_crq_init;
+	struct work_struct ibmvnic_xport;
 };
